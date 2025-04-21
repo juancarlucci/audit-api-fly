@@ -23,7 +23,11 @@ app.get("/audit", async (req, res) => {
 
   try {
     //* Run the pa11y accessibility audit
-    const results = await pa11y(url);
+    const results = await pa11y(url, {
+      chromeLaunchConfig: {
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      },
+    });
     return res.json(results);
   } catch (error) {
     //* Catch and return errors, especially around puppeteer/chrome issues
