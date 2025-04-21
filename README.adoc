@@ -1,0 +1,76 @@
+= Audit API Fly
+:author: Juan Carlos Collins
+:revdate: 2025-04-21
+:toc: macro
+:toclevels: 2
+
+This is the backend service for the Accessibly Yours project. It provides a RESTful API that runs real-time accessibility audits on provided URLs and returns structured JSON results. It is designed to be hosted on Fly.io to enable use of Puppeteer in a full Linux container.
+
+== Motivation
+
+Why Fly.io?
+
+- ❌ Vercel serverless functions cannot run headless Chromium out of the box.
+- ✅ Fly.io supports full Docker-based containers with root access and custom dependencies.
+- 👷 Ideal for hosting a small Express API that uses `pa11y`, which depends on headless browsers.
+
+== Tech Stack
+
+- Express.js server
+- Puppeteer via `pa11y`
+- Deployed using Docker on Fly.io
+
+== Endpoint
+
+[GET] `/audit?url=https://example.com`
+
+Returns:
+
+```json
+{
+  "documentTitle": "Example Site",
+  "pageUrl": "https://example.com",
+  "issues": [
+    {
+      "code": "WCAG2AA.Principle1.Guideline1_3...",
+      "message": "Fieldset does not contain a legend...",
+      "selector": "#main-content > form"
+    }
+  ]
+}
+```
+
+== Development
+
+To run locally:
+
+```bash
+npm install
+node server.js
+```
+
+== Deployment
+
+1. `flyctl launch` to create the app
+2. `fly deploy` to push the Docker image
+3. Verify live at: https://audit-api-fly-01.fly.dev/audit?url=https://wikipedia.org
+
+== Files
+
+- `server.js`: Entry point; sets up Express server and routes
+- `Dockerfile`: Uses Playwright base image for Chromium compatibility
+- `fly.toml`: Fly.io app configuration (port, region, etc.)
+
+== Lessons Learned
+
+- Puppeteer requires headless Chrome to be bundled or installed; Docker image solved this
+- Using Fly.io gave full control over the environment vs. serverless abstraction
+- CORS must be enabled to allow frontend to fetch audit results
+
+== Future Work
+
+- Add caching for frequent URL audits
+- Support batch auditing (multiple URLs)
+- Rate limiting or API keys for public use
+
+See the frontend project that connects to this API: https://github.com/juancarlucci/accessibly-yours
