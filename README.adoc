@@ -67,10 +67,24 @@ node server.js
 - Using Fly.io gave full control over the environment vs. serverless abstraction
 - CORS must be enabled to allow frontend to fetch audit results
 
+== Features
+
+- ✅ In-memory caching for frequent URL audits
+- ✅ Rate limiting (100 requests per 15 minutes per IP)
+- ✅ CORS enabled for cross-origin requests
+
 == Future Work
 
-- Add caching for frequent URL audits
 - Support batch auditing (multiple URLs)
-- Rate limiting or API keys for public use
+- Implement persistent caching
+- Add API key authentication
+- Support custom Pa11y configurations
+
+== Rate Limiting
+
+The API implements rate limiting to prevent abuse:
+- 100 requests per IP address
+- 15 minute window
+- Returns 429 status code when limit is exceeded
 
 See the frontend project that connects to this API: https://github.com/juancarlucci/accessibly-yours
